@@ -1,0 +1,80 @@
+<project name="TAO deployer" default="help">
+
+
+	<tstamp>
+		<format property="TSTAMP" pattern="%Y%m%d_%H%M%S" />
+	</tstamp>
+	<property environment="env" />
+
+	<property name="package.name" value="${env.BUILD_TAG}_${TSTAMP}" />
+	<echo msg="${package.name}" />
+
+
+	<property file="build.properties" />
+
+	<target name="clean">
+		<delete dir="src" />
+		<delete dir="package" />
+	</target>
+	<target name="prepare">
+		<mkdir dir="src" />
+		<mkdir dir="package" />
+
+	</target>
+	<resolvepath propertyName="src.dir.resolved" file="src" />
+	<resolvepath propertyName="package.dir.resolved" file="package" />
+
+	<target name="clone" depends="clean,prepare">
+		<gitclone repository="${repository}" targetPath="src" />
+
+		<if>
+			<equals arg1="${branch_merge_into}" arg2="master" />
+			<then>
+				<echo level="info" msg="Already on master" />
+			</then>
+			<else>
+				<echo level="info" msg="Fetch ${branch_merge_into} " />
+				<gitfetch repository="${src.dir.resolved}" source="origin" refspec="${branch_merge_into}:${branch_merge_into}" />
+				<gitcheckout repository="${src.dir.resolved}" branchname="${branch_merge_into}" />
+			</else>
+		</if>
+	</target>
+
+	<target name="merge">
+		<gitmerge
+    		repository="${src.dir.resolved}"
+    		strategy="recursive"
+    		strategyOption="theirs"
+    		remote="origin/${branch_merge_from}"
+    		message="merging repos" commit="true" />
+    						
+    						
+    		<exec command='sed -i "s*${branch_merge_from}*${branch_merge_into}*g" ${src.dir.resolved}/composer.json' />
+
+	</target>
+	
+	<target name="composer_update" description="Update extensions and 3rd part lib using composer">
+		<composer command="update" composer="${composer.bin}">
+			<arg value="--no-interaction" />
+			<arg value="--no-scripts" />
+			<arg value="--no-progress" />
+			<arg value="--working-dir" />
+			<arg path="${src.dir.resolved}" />
+
+		</composer>
+	</target>
+
+	<target name="composer_install" description="Install extensions and 3rd part lib using composer">
+		<composer command="install" composer="${composer.bin}">
+			<arg value="--no-interaction" />
+			<arg value="--no-scripts" />
+			<arg value="--no-progress" />
+			<arg value="--working-dir" />
+			<arg path="${src.dir.resolved}" />
+
+		</composer>
+	</target>
+
+
+
+</project>
