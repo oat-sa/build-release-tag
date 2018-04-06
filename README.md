@@ -8,7 +8,7 @@ composer install
 
 ## Configure
 
-Setup your build.properties with your origin  `repository``branch_merge_from`, `branch_merge_into` and `tag_name`
+Setup your build.properties with your origin  `repository`, `branch_merge_from`, `branch_merge_into` and `tag_name`
 
 
 
