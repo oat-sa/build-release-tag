@@ -18,6 +18,6 @@ Setup your build.properties with your origin  `repository`, `branch_merge_from`,
 Update/push composer.json and composer.lock on source repository then run following command to automaticaly update branch and create tag
 
 ```
-vendor/bin/phing clone composer_install merge composer_install tag push
+vendor/bin/phing clone composer_install push
 ``` 
 
