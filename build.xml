@@ -93,6 +93,10 @@
 		</composer>
 	</target>
 
-
+	<target name="update_extensions">
+		<echo msg="${ghtoolkit.bin}" />
+		<exec command="${ghtoolkit.bin} release prepare -c src/composer.json master >  src/composer.json.new"  passthru="true"/>
+		<exec command="mv src/composer.json.new src/composer.json" />
+	</target>
 
 </project>
